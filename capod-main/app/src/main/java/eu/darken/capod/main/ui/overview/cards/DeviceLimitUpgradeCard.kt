@@ -56,7 +56,7 @@ fun DeviceLimitUpgradeCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stringResource(R.string.upgrade_capod_description),
+                text = stringResource(R.string.upgrade_PodsMate_description),
                 style = MaterialTheme.typography.bodyMedium,
             )
 

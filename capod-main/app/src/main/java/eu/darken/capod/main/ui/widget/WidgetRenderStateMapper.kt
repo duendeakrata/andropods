@@ -35,7 +35,7 @@ object WidgetRenderStateMapper {
                 resolvedIconColor = iconColor,
                 layout = layout,
                 primaryText = context.getString(R.string.upgrade_PodsMate_label),
-                secondaryText = context.getString(R.string.upgrade_capod_description),
+                secondaryText = context.getString(R.string.upgrade_PodsMate_description),
             )
 
             device != null && device.hasDualPods -> WidgetRenderState.DualPod(
