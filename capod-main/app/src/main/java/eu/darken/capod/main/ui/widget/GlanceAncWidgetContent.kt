@@ -29,7 +29,6 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.material3.GlanceTheme
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -49,11 +48,9 @@ fun GlanceAncWidgetContent(
         }
     )
 
-    GlanceTheme {
-        when (state) {
-            is AncWidgetRenderState.Active -> GlanceAncActive(state, appWidgetId)
-            is AncWidgetRenderState.Message -> GlanceAncMessage(state, GlanceModifier.clickable(openApp))
-        }
+    when (state) {
+        is AncWidgetRenderState.Active -> GlanceAncActive(state, appWidgetId)
+        is AncWidgetRenderState.Message -> GlanceAncMessage(state, GlanceModifier.clickable(openApp))
     }
 }
 
