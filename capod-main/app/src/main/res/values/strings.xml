@@ -192,7 +192,7 @@
     <string name="onboarding_body4">You can upgrade to CAPod Pro to gain extra features and support development.</string>
 
     <!-- Strings from app-common -->
-    <string name="app_name">CAPod</string>
+    <string name="app_name">Andropods</string>
     <!-- Upgraded app title. %1$s is the app name, %2$s the tier qualifier ("Pro" / "FOSS").
          Reorder or repunctuate for your language; both placeholders must appear exactly once. -->
     <string name="app_name_upgraded_template">%1$s %2$s</string>

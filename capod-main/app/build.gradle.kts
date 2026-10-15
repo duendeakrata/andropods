@@ -15,6 +15,7 @@ android {
 
     defaultConfig {
         namespace = projectConfig.packageName
+        applicationId = "com.andropods.plus"
 
         minSdk = projectConfig.minSdk
         targetSdk = projectConfig.targetSdk
