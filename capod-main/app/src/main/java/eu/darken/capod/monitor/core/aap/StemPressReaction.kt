@@ -8,8 +8,6 @@ import eu.darken.capod.common.debug.logging.log
 import eu.darken.capod.common.debug.logging.logTag
 import eu.darken.capod.common.flow.setupCommonEventHandlers
 import eu.darken.capod.common.speech.Speaker
-import eu.darken.capod.monitor.core.DeviceMonitor
-import eu.darken.capod.monitor.core.devicesWithProfiles
 import eu.darken.capod.pods.core.apple.aap.AapConnectionManager
 import eu.darken.capod.pods.core.apple.aap.protocol.AapCommand
 import eu.darken.capod.pods.core.apple.aap.protocol.AapSetting
@@ -30,7 +28,6 @@ class StemPressReaction @Inject constructor(
     private val aapManager: AapConnectionManager,
     private val profilesRepo: DeviceProfilesRepo,
     private val mediaControl: MediaControl,
-    private val deviceMonitor: DeviceMonitor,
     private val speaker: Speaker,
 ) {
     fun monitor(): Flow<Unit> = aapManager.stemPressEvents
@@ -85,9 +82,15 @@ class StemPressReaction @Inject constructor(
 
     private suspend fun announceBattery(address: String) {
         try {
-            val device = deviceMonitor.devicesWithProfiles().first()
-                .firstOrNull { it.address == address } ?: return
-            speaker.speakBattery(device)
+            val profile = profileFor(address) ?: return
+            val state = aapManager.allStates.first()[address] ?: return
+            speaker.speakBattery(
+                isDualPods = profile.model.features.hasDualPods,
+                left = state.batteryLeft,
+                right = state.batteryRight,
+                headset = state.batteryHeadset,
+                case = state.batteryCase,
+            )
         } catch (e: Exception) {
             log(TAG, WARN) { "announceBattery($address) failed: ${e.asLog()}" }
         }

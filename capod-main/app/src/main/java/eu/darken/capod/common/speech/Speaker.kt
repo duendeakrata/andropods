@@ -70,18 +70,30 @@ class Speaker @Inject constructor(
     }
 
     suspend fun speakBattery(device: PodDevice) {
+        speakBattery(
+            isDualPods = device.model.features.hasDualPods,
+            left = device.batteryLeft.takeUnless { it == BATTERY_UNKNOWN },
+            right = device.batteryRight.takeUnless { it == BATTERY_UNKNOWN },
+            headset = device.batteryHeadset.takeUnless { it == BATTERY_UNKNOWN },
+            case = device.batteryCase.takeUnless { it == BATTERY_UNKNOWN },
+        )
+    }
+
+    suspend fun speakBattery(
+        isDualPods: Boolean,
+        left: Float?,
+        right: Float?,
+        headset: Float?,
+        case: Float?,
+    ) {
         val parts = mutableListOf<String>()
-        val left = device.batteryLeft.toPercent()
-        val right = device.batteryRight.toPercent()
-        val headset = device.batteryHeadset.toPercent()
-        val case = device.batteryCase.toPercent()
-        if (device.model.features.hasDualPods) {
-            if (left != null) parts += context.getString(R.string.speech_battery_left, left)
-            if (right != null) parts += context.getString(R.string.speech_battery_right, right)
-        } else if (headset != null) {
-            parts += context.getString(R.string.speech_battery_headset, headset)
+        if (isDualPods) {
+            left?.toPercent()?.let { parts += context.getString(R.string.speech_battery_left, it) }
+            right?.toPercent()?.let { parts += context.getString(R.string.speech_battery_right, it) }
+        } else {
+            headset?.toPercent()?.let { parts += context.getString(R.string.speech_battery_headset, it) }
         }
-        if (case != null) parts += context.getString(R.string.speech_battery_case, case)
+        case?.toPercent()?.let { parts += context.getString(R.string.speech_battery_case, it) }
         if (parts.isEmpty()) return
         speak(context.getString(R.string.speech_battery_template, parts.joinToString(", ")))
     }
