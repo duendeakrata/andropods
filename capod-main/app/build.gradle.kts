@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         namespace = projectConfig.packageName
-        applicationId = "com.andropods.plus"
+        applicationId = "com.podsmate"
 
         minSdk = projectConfig.minSdk
         targetSdk = projectConfig.targetSdk

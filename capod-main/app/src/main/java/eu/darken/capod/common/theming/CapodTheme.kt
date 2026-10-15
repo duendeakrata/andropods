@@ -25,12 +25,14 @@ fun CapodTheme(
 
     val context = LocalContext.current
     val colorScheme = remember(state, darkTheme, dynamicColors) {
-        when {
+        val base = when {
             dynamicColors && darkTheme -> dynamicDarkColorScheme(context)
             dynamicColors && !darkTheme -> dynamicLightColorScheme(context)
             darkTheme -> ThemeColorProvider.getDarkColorScheme(state.color, state.style)
             else -> ThemeColorProvider.getLightColorScheme(state.color, state.style)
         }
+        // PodsMate identity: iOS grouped backgrounds on top of the user scheme.
+        IosTheme.adapt(base, darkTheme)
     }
 
     CompositionLocalProvider(

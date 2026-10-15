@@ -18,13 +18,12 @@ fun SettingsCategoryHeader(
     subtitle: String? = null,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
-            text = text,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Medium,
+            text = text.uppercase(),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         subtitle?.let {
             Text(
