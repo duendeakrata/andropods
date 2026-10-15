@@ -16,9 +16,15 @@ object IosTheme {
     private val IosGroupedDark = Color(0xFF000000)
     private val IosCardDark = Color(0xFF1C1C1E)
     private val IosFillDark = Color(0xFF2C2C2E)
+    private val IosBlue = Color(0xFF007AFF)
+    private val IosBlueDark = Color(0xFF0A84FF)
 
     fun adapt(scheme: ColorScheme, darkTheme: Boolean): ColorScheme = if (darkTheme) {
         scheme.copy(
+            primary = IosBlueDark,
+            onPrimary = Color.White,
+            primaryContainer = IosBlueDark,
+            onPrimaryContainer = Color.White,
             background = IosGroupedDark,
             onBackground = Color.White,
             surface = IosCardDark,
@@ -36,6 +42,10 @@ object IosTheme {
         )
     } else {
         scheme.copy(
+            primary = IosBlue,
+            onPrimary = Color.White,
+            primaryContainer = Color(0xFFDBE9FF),
+            onPrimaryContainer = IosBlue,
             background = IosGroupedLight,
             onBackground = Color.Black,
             surface = IosCardLight,

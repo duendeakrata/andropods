@@ -164,7 +164,7 @@ private fun BatteryColumn(
         Image(
             painter = painterResource(iconRes),
             contentDescription = null,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(72.dp),
             contentScale = ContentScale.Fit,
         )
 
@@ -178,19 +178,19 @@ private fun BatteryColumn(
                 Icon(
                     imageVector = Icons.TwoTone.BatteryChargingFull,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             } else {
                 Icon(
                     imageVector = getBatteryIcon(batteryPercent),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             }
-            Spacer(modifier = Modifier.width(2.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = formatBatteryPercent(context, batteryPercent),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
