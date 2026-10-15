@@ -1,0 +1,1 @@
+CAPod este o aplicație asistent pentru AirPods.
