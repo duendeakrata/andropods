@@ -482,7 +482,10 @@ private fun PodsMateHero(
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .background(
                 brush = Brush.horizontalGradient(
-                    listOf(Color(0xFF007AFF), Color(0xFF5856D6))
+                    listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.tertiary,
+                    )
                 ),
                 shape = RoundedCornerShape(20.dp),
             )

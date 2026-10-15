@@ -31,8 +31,9 @@ fun CapodTheme(
             darkTheme -> ThemeColorProvider.getDarkColorScheme(state.color, state.style)
             else -> ThemeColorProvider.getLightColorScheme(state.color, state.style)
         }
-        // PodsMate identity: iOS grouped backgrounds on top of the user scheme.
-        IosTheme.adapt(base, darkTheme)
+        // PodsMate identity: iOS grouped backgrounds on top of static schemes.
+        // Dynamic (Material You) schemes pass through untouched for full Pixel integration.
+        if (dynamicColors) base else IosTheme.adapt(base, darkTheme)
     }
 
     CompositionLocalProvider(

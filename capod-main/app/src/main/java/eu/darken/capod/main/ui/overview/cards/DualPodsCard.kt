@@ -347,14 +347,14 @@ private fun PodGauge(
         // Ring with icon inside
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(68.dp),
+            modifier = Modifier.size(84.dp),
         ) {
             // Track ring
             CircularProgressIndicator(
                 progress = { 1f },
-                modifier = Modifier.size(68.dp),
+                modifier = Modifier.size(84.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                strokeWidth = 6.dp,
+                strokeWidth = 7.dp,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round,
             )
@@ -363,9 +363,9 @@ private fun PodGauge(
             if (isKnown) {
                 CircularProgressIndicator(
                     progress = { animatedProgress },
-                    modifier = Modifier.size(68.dp),
+                    modifier = Modifier.size(84.dp),
                     color = ringColor,
-                    strokeWidth = 6.dp,
+                    strokeWidth = 7.dp,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     strokeCap = StrokeCap.Round,
                 )
@@ -375,7 +375,7 @@ private fun PodGauge(
             Image(
                 painter = painterResource(iconRes),
                 contentDescription = null,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(44.dp),
             )
         }
 
