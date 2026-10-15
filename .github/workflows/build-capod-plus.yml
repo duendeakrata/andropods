@@ -1,0 +1,28 @@
+name: Build CAPod Plus (full app + mejoras)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - capod-main/**
+      - .github/workflows/build-capod-plus.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: capod-main
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: chmod +x gradlew
+      - run: ./gradlew app:assembleFossDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capod-plus-foss-debug-apk
+          path: capod-main/app/build/outputs/apk/foss/debug/*.apk

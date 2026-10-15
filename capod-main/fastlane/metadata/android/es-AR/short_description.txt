@@ -1,0 +1,1 @@
+CAPod es una aplicación complementaria para AirPods en Android.

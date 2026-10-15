@@ -1,0 +1,1 @@
+CAPod je spremljevalna aplikacija za AirPods na Androidu.
