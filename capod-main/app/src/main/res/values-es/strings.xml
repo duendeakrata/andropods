@@ -536,6 +536,7 @@
     <string name="press_action_toggle_anc_transparency">Alternar transparencia</string>
     <string name="press_action_voice_assistant">Asistente de voz</string>
     <string name="press_action_announce_battery">Anunciar batería</string>
+    <string name="fluid_slot_case">Estuche</string>
     <string name="press_controls_reset_label">Restablecer valores predeterminados</string>
     <string name="press_controls_reset_confirm_message">¿Restablecer todas las asignaciones de pulsación a los valores predeterminados?</string>
     <string name="device_settings_noise_control_open_press_controls_action">Abrir controles de pulsación</string>

@@ -36,6 +36,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import eu.darken.capod.ui.fluid.components.BatteryStatusRingGroup
+import eu.darken.capod.ui.fluid.state.toFluidState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -242,48 +245,23 @@ private fun ColumnScope.DualPodsCardExpanded(
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                PodGauge(
-                    iconRes = device.leftPodIcon,
-                    batteryPercent = device.batteryLeft,
-                    chargingState = device.leftPodChargingState
-                        ?: device.isLeftPodCharging?.let { if (it) AapPodState.ChargingState.CHARGING else null },
-                    isInEar = device.isLeftInEar ?: false,
-                    showEarDetection = device.hasEarDetection && device.hasDualPods,
-                    isMicrophone = device.isLeftPodMicrophone ?: false,
-                    showMicrophone = device.hasDualMicrophone,
-                    modifier = Modifier.weight(1f),
-                    timeRemaining = batteryEstimate?.left?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
-                    untilCharged = batteryEstimate?.left?.minutesUntilCharged?.let { formatBatteryDurationShort(context, it) },
-                )
-
-                PodGauge(
-                    iconRes = device.rightPodIcon,
-                    batteryPercent = device.batteryRight,
-                    chargingState = device.rightPodChargingState
-                        ?: device.isRightPodCharging?.let { if (it) AapPodState.ChargingState.CHARGING else null },
-                    isInEar = device.isRightInEar ?: false,
-                    showEarDetection = device.hasEarDetection && device.hasDualPods,
-                    isMicrophone = device.isRightPodMicrophone ?: false,
-                    showMicrophone = device.hasDualMicrophone,
-                    modifier = Modifier.weight(1f),
-                    timeRemaining = batteryEstimate?.right?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
-                    untilCharged = batteryEstimate?.right?.minutesUntilCharged?.let { formatBatteryDurationShort(context, it) },
+            val fluidState = remember(device) {
+                device.toFluidState(
+                    label = "",
+                    leftMinutes = batteryEstimate?.left?.minutesRemaining,
+                    rightMinutes = batteryEstimate?.right?.minutesRemaining,
                 )
             }
-
-            // Case row
-            if (device.hasCase) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                )
-
-                CaseRow(device = device)
-            }
+            BatteryStatusRingGroup(
+                state = fluidState,
+                leftLabel = stringResource(R.string.press_controls_left),
+                rightLabel = stringResource(R.string.press_controls_right),
+                caseLabel = stringResource(R.string.fluid_slot_case),
+                leftEta = batteryEstimate?.left?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
+                rightEta = batteryEstimate?.right?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
+                caseEta = null,
+                dimmed = !device.isLive,
+            )
         }
     }
 

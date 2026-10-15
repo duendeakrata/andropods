@@ -614,6 +614,7 @@
     <string name="press_action_toggle_anc_transparency">Toggle Transparency</string>
     <string name="press_action_voice_assistant">Voice Assistant</string>
     <string name="press_action_announce_battery">Announce Battery</string>
+    <string name="fluid_slot_case">Case</string>
     <string name="press_controls_reset_label">Reset to defaults</string>
     <string name="press_controls_reset_confirm_message">Reset all press mappings to defaults?</string>
     <string name="device_settings_noise_control_open_press_controls_action">Open Press Controls</string>

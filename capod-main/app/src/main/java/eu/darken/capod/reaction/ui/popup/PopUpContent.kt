@@ -1,5 +1,8 @@
 package eu.darken.capod.reaction.ui.popup
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,8 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,6 +48,7 @@ import eu.darken.capod.monitor.core.PodDevice
 import eu.darken.capod.pods.core.apple.PodModel
 import eu.darken.capod.pods.core.apple.ble.formatBatteryPercent
 import eu.darken.capod.pods.core.apple.ble.getBatteryIcon
+import kotlin.math.roundToInt
 
 @Composable
 fun PopUpContent(
@@ -49,8 +59,27 @@ fun PopUpContent(
     val context = LocalContext.current
 
     Box(modifier = modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp)) {
+        // Fluid entrance: fade + spring scale on first composition.
+        var entered by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { entered = true }
+        val enterScale by animateFloatAsState(
+            targetValue = if (entered) 1f else 0.92f,
+            animationSpec = eu.darken.capod.ui.fluid.theme.FluidTokens.bouncy(),
+            label = "popupEnter",
+        )
+        val enterAlpha by animateFloatAsState(
+            targetValue = if (entered) 1f else 0f,
+            animationSpec = tween(200),
+            label = "popupFade",
+        )
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    scaleX = enterScale
+                    scaleY = enterScale
+                    alpha = enterAlpha
+                },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -156,6 +185,13 @@ private fun BatteryColumn(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val isKnown = batteryPercent >= 0f
+    // Animated count-up on reveal.
+    val countUp by animateIntAsState(
+        targetValue = if (isKnown) (batteryPercent * 100).roundToInt().coerceIn(0, 100) else 0,
+        animationSpec = tween(900),
+        label = "batteryCountUp",
+    )
 
     Column(
         modifier = modifier,
@@ -189,8 +225,10 @@ private fun BatteryColumn(
             }
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = formatBatteryPercent(context, batteryPercent),
-                style = MaterialTheme.typography.titleMedium,
+                text = if (isKnown) "$countUp%" else formatBatteryPercent(context, batteryPercent),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontFeatureSettings = eu.darken.capod.ui.fluid.theme.FluidTokens.TabularFigures,
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
