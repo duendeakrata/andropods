@@ -32,13 +32,17 @@ class Speaker @Inject constructor(
     private suspend fun engine(): TextToSpeech? = mutex.withLock {
         engine?.let { return it }
         val created = suspendCoroutine<TextToSpeech?> { cont ->
+            var tts: TextToSpeech? = null
             var resumed = false
             try {
-                val tts = TextToSpeech(context) { status ->
+                tts = TextToSpeech(context) { status ->
                     if (resumed) return@TextToSpeech
                     resumed = true
-                    if (status == TextToSpeech.SUCCESS) cont.resume(tts) else {
-                        runCatching { tts.shutdown() }
+                    val ready = tts
+                    if (status == TextToSpeech.SUCCESS && ready != null) {
+                        cont.resume(ready)
+                    } else {
+                        runCatching { ready?.shutdown() }
                         cont.resume(null)
                     }
                 }
