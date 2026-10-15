@@ -86,6 +86,7 @@ import eu.darken.capod.main.ui.overview.cards.UnknownPodDeviceCard
 import eu.darken.capod.main.ui.overview.cards.UnmatchedDevicesCard
 import eu.darken.capod.monitor.core.PodDevice
 import eu.darken.capod.monitor.core.battery.BatteryEstimate
+import eu.darken.capod.ui.fluid.components.BleRadar
 import eu.darken.capod.pods.core.apple.PodModel
 import eu.darken.capod.pods.core.apple.aap.protocol.AapSetting
 import java.time.Instant
@@ -437,6 +438,11 @@ fun OverviewScreen(
                             isExpanded = state.showUnmatchedDevices,
                             onToggle = onToggleUnmatched,
                         )
+                    }
+
+                    // Fluid BLE radar above the flat list.
+                    item(key = "unmatched_radar") {
+                        BleRadar(devices = state.visibleUnmatchedDevices)
                     }
 
                     if (state.showUnmatchedDevices) {

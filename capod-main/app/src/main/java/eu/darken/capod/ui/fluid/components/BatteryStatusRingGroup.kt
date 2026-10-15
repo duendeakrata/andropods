@@ -1,5 +1,6 @@
 package eu.darken.capod.ui.fluid.components
 
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -140,15 +141,21 @@ private fun RingCanvas(slots: List<RingSlot>, pulse: Float) {
     val size = FluidTokens.GaugeSize
     val stroke = 13.dp
     val gap = 7.dp
+    // Colors must be resolved outside the draw scope (fillColor() is @Composable).
+    data class ArcStyle(val known: Boolean, val color: androidx.compose.ui.graphics.Color)
+    val styles = slots.map { slot ->
+        val tier = batteryTier(slot.level)
+        val known = tier != BatteryTier.UNKNOWN
+        ArcStyle(known, if (known) tier.fillColor() else track)
+    }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(size)) {
         Canvas(modifier = Modifier.size(size)) {
             val strokePx = stroke.toPx()
             val gapPx = gap.toPx()
             var inset = 0f
             val diameter = size.toPx()
-            slots.forEach { slot ->
-                val tier = batteryTier(slot.level)
-                val known = tier != BatteryTier.UNKNOWN
+            slots.forEachIndexed { index, slot ->
+                val style = styles[index]
                 val box = androidx.compose.ui.geometry.Size(diameter - inset * 2f, diameter - inset * 2f)
                 val origin = androidx.compose.ui.geometry.Offset(inset, inset)
                 drawArc(
@@ -161,15 +168,15 @@ private fun RingCanvas(slots: List<RingSlot>, pulse: Float) {
                     style = Stroke(
                         width = strokePx,
                         cap = StrokeCap.Round,
-                        pathEffect = if (known) null else PathEffect.dashPathEffect(floatArrayOf(9f, 9f)),
+                        pathEffect = if (style.known) null else PathEffect.dashPathEffect(floatArrayOf(9f, 9f)),
                     ),
                 )
-                if (known) {
+                if (style.known) {
                     val alpha = if (slot.charging) pulse else 1f
                     if (slot.charging) {
                         // Halo glow behind the progress arc.
                         drawArc(
-                            color = tier.fillColor().copy(alpha = 0.25f * pulse),
+                            color = style.color.copy(alpha = 0.25f * pulse),
                             startAngle = -90f,
                             sweepAngle = 360f * slot.animated,
                             useCenter = false,
@@ -179,7 +186,7 @@ private fun RingCanvas(slots: List<RingSlot>, pulse: Float) {
                         )
                     }
                     drawArc(
-                        color = tier.fillColor().copy(alpha = alpha),
+                        color = style.color.copy(alpha = alpha),
                         startAngle = -90f,
                         sweepAngle = 360f * slot.animated,
                         useCenter = false,

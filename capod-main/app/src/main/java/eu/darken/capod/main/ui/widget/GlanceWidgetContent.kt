@@ -22,6 +22,7 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.material3.GlanceTheme
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -42,11 +43,13 @@ fun GlanceWidgetContent(
         }
     )
 
-    when (state) {
-        is WidgetRenderState.DualPod -> GlanceDualPod(state, GlanceModifier.clickable(openApp))
-        is WidgetRenderState.SinglePod -> GlanceSinglePod(state, GlanceModifier.clickable(openApp))
-        is WidgetRenderState.Message -> GlanceMessage(state, GlanceModifier.clickable(openApp))
-        is WidgetRenderState.Loading -> GlanceLoading(state, GlanceModifier.clickable(openApp))
+    GlanceTheme {
+        when (state) {
+            is WidgetRenderState.DualPod -> GlanceDualPod(state, GlanceModifier.clickable(openApp))
+            is WidgetRenderState.SinglePod -> GlanceSinglePod(state, GlanceModifier.clickable(openApp))
+            is WidgetRenderState.Message -> GlanceMessage(state, GlanceModifier.clickable(openApp))
+            is WidgetRenderState.Loading -> GlanceLoading(state, GlanceModifier.clickable(openApp))
+        }
     }
 }
 
@@ -242,7 +245,7 @@ private fun GlanceWidgetRoot(
         modifier = clickModifier
             .fillMaxSize()
             .background(fixedColor(bgColor))
-            .cornerRadius(16.dp)
+            .cornerRadius(28.dp)
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalAlignment = Alignment.CenterVertically,
