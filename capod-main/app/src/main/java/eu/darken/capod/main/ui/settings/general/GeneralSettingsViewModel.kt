@@ -72,26 +72,36 @@ class GeneralSettingsViewModel @Inject constructor(
             @Suppress("USELESS_CAST")
             arrayOf<Any>(filtering as Any, batching as Any, indirect as Any)
         },
-        generalSettings.themeState,
-        isUpgradeLocked,
-        generalSettings.hideUnmatchedDevices.flow,
-        generalSettings.announceBatteryEvents.flow,
-        generalSettings.popupPosition.flow,
-        generalSettings.popupAutoDismissSecs.flow,
-    ) { general, compat, themeState, upgradeLocked, hideUnmatched, announceBattery, popupPos, autoDismiss ->
+        combine(
+            generalSettings.themeState,
+            isUpgradeLocked,
+            generalSettings.hideUnmatchedDevices.flow,
+        ) { theme, locked, hide ->
+            @Suppress("USELESS_CAST")
+            arrayOf<Any>(theme as Any, locked as Any, hide as Any)
+        },
+        combine(
+            generalSettings.announceBatteryEvents.flow,
+            generalSettings.popupPosition.flow,
+            generalSettings.popupAutoDismissSecs.flow,
+        ) { announce, popupPos, autoDismiss ->
+            @Suppress("USELESS_CAST")
+            arrayOf<Any>(announce as Any, popupPos as Any, autoDismiss as Any)
+        },
+    ) { general, compat, themeGroup, extraGroup ->
         State(
-            isUpgradeLocked = upgradeLocked,
+            isUpgradeLocked = themeGroup[1] as Boolean,
             showConnectedNotification = general[0] as Boolean,
             keepNotificationAfterDisconnect = general[1] as Boolean,
             showBatteryInStatusBar = general[2] as Boolean,
             isOffloadedFilteringDisabled = compat[0] as Boolean,
             isOffloadedBatchingDisabled = compat[1] as Boolean,
             useIndirectScanResultCallback = compat[2] as Boolean,
-            hideUnmatchedDevices = hideUnmatched,
-            themeState = themeState,
-            announceBatteryEvents = announceBattery,
-            popupPosition = popupPos,
-            popupAutoDismissSecs = autoDismiss,
+            hideUnmatchedDevices = themeGroup[2] as Boolean,
+            themeState = themeGroup[0] as ThemeState,
+            announceBatteryEvents = extraGroup[0] as Boolean,
+            popupPosition = extraGroup[1] as PopupPosition,
+            popupAutoDismissSecs = extraGroup[2] as Int,
         )
     }.asLiveState()
 

@@ -53,6 +53,7 @@ import eu.darken.capod.R
 import eu.darken.capod.monitor.core.visibleAncModes
 import eu.darken.capod.main.ui.overview.cards.components.AncModeSelector
 import eu.darken.capod.main.ui.overview.cards.components.BatteryCapsule
+import eu.darken.capod.main.ui.overview.cards.components.BatteryRing
 import eu.darken.capod.main.ui.overview.cards.components.CompactBatterySummary
 import eu.darken.capod.main.ui.overview.cards.components.batteryTierState
 import eu.darken.capod.main.ui.overview.cards.components.DebugSection
