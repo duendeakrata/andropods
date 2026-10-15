@@ -1,7 +1,9 @@
 package eu.darken.capod.common.settings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Icon
@@ -62,29 +65,52 @@ fun SettingsBaseItem(
             Color.Unspecified
         }
 
-        val iconModifier = if (subtitle != null) {
-            Modifier
-                .align(Alignment.Top)
-                .padding(top = 2.dp)
-                .size(iconSize)
-        } else {
-            Modifier.size(iconSize)
+        val iconModifier = Modifier.size(20.dp)
+        val iconBox: @Composable (() -> Unit)? = when {
+            icon != null -> {
+                {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(38.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(12.dp),
+                            ),
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            modifier = iconModifier,
+                            tint = tint,
+                        )
+                    }
+                }
+            }
+            iconPainter != null -> {
+                {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(38.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(12.dp),
+                            ),
+                    ) {
+                        Icon(
+                            painter = iconPainter,
+                            contentDescription = null,
+                            modifier = iconModifier,
+                            tint = tint,
+                        )
+                    }
+                }
+            }
+            else -> null
         }
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = iconModifier,
-                tint = tint,
-            )
-        } else if (iconPainter != null) {
-            Icon(
-                painter = iconPainter,
-                contentDescription = null,
-                modifier = iconModifier,
-                tint = tint,
-            )
-        }
+        // Keep rows compact: icon sits centered relative to the whole row.
+        iconBox?.invoke()
 
         Column(
             modifier = Modifier

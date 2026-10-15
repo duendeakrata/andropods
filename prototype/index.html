@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PodsMate — Prototipo Fluid</title>
+<style>
+  :root{
+    --primary:#0A84FF; --tertiary:#5E5CE6; --bg:#000000; --card:#1C1C1E; --fill:#2C2C2E;
+    --text:#FFFFFF; --sub:#AEAEB2; --green:#30D158; --amber:#FF9F0A; --red:#FF453A;
+    --radius:28px;
+  }
+  body.light{ --bg:#F2F2F7; --card:#FFFFFF; --fill:#E9E9EE; --text:#000000; --sub:#6B6B70; }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:96px;}
+  header.app{padding:28px 20px 8px; display:flex; align-items:center; justify-content:space-between;}
+  header.app h1{font-size:32px; margin:0; font-weight:800; letter-spacing:-.5px;}
+  .themebtn{border:0; background:var(--fill); color:var(--text); border-radius:100px; padding:10px 14px; font-size:14px;}
+  main{padding:0 16px; max-width:560px; margin:0 auto;}
+  section.tab{display:none;} section.tab.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1;}}
+  .card{background:var(--card); border-radius:var(--radius); padding:20px; margin:12px 0;}
+  .hero{background:linear-gradient(120deg,var(--primary),var(--tertiary)); color:#fff; border-radius:var(--radius);
+    padding:22px; display:flex; gap:16px; align-items:center; margin:12px 0;}
+  .hero img{width:64px; height:64px; object-fit:contain; flex-shrink:0;}
+  .hero h2{margin:0; font-size:24px;} .hero p{margin:4px 0 0; opacity:.85; font-size:14px;}
+  .sec-title{font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--sub); margin:20px 4px 2px;}
+  .buds3d{display:flex; justify-content:center; align-items:flex-end; gap:26px; padding:18px 0 4px;}
+  .pod{opacity:0; transform:translateY(26px) scale(.9); animation:drop .7s cubic-bezier(.2,.9,.25,1.15) forwards;}
+  .pod:nth-child(2){animation-delay:.15s;} .pod:nth-child(3){animation-delay:.3s;}
+  @keyframes drop{to{opacity:1; transform:none;}}
+  .pod img{width:72px; height:72px; object-fit:contain; display:block; margin:0 auto;
+    transition:filter .3s, opacity .3s;}
+  .buds3d.unlinked img{filter:grayscale(1); opacity:.45;}
+  .buds3d.unlinked .bar i{background:var(--sub) !important;}
+  .pod .bar{height:8px; border-radius:100px; background:var(--fill); margin-top:8px; overflow:hidden;}
+  .pod .bar i{display:block; height:100%; width:0; border-radius:100px;
+    transition:width 1.1s cubic-bezier(.2,.9,.25,1.1);}
+  .pod p{margin:6px 0 0; font-size:13px; color:var(--sub); text-align:center;
+    font-variant-numeric:tabular-nums;}
+  .pod p b{color:var(--text); font-size:16px;}
+  .modelpick{width:100%; background:var(--card); color:var(--text); border:0; border-radius:16px;
+    padding:14px 16px; font-size:15px; font-weight:600; margin:12px 0 0; appearance:none;}
+  .modelrail{display:flex; gap:10px; overflow-x:auto; padding:12px 2px 4px; margin:0 -16px; padding-left:16px;
+    padding-right:16px; scrollbar-width:none;}
+  .modelrail::-webkit-scrollbar{display:none;}
+  .mcard{flex:0 0 auto; width:104px; background:var(--card); border-radius:20px; padding:12px 8px 10px;
+    text-align:center; border:2px solid transparent;}
+  .mcard.on{border-color:var(--primary);}
+  .mcard img{width:56px; height:56px; object-fit:contain; filter:grayscale(1); opacity:.55;
+    transition:filter .3s, opacity .3s;}
+  .mcard.on img{filter:none; opacity:1;}
+  .mcard p{margin:6px 0 0; font-size:11px; font-weight:600; line-height:1.25; min-height:28px;}
+  .legend{display:flex; align-items:center; gap:10px; padding:9px 8px; font-size:15px;}
+  .dot{width:10px; height:10px; border-radius:50%;}
+  .legend .v{margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700;}
+  .legend .eta{color:var(--sub); font-size:13px;}
+  .pills{display:flex; gap:8px; flex-wrap:wrap;}
+  .pill{border:0; border-radius:100px; padding:12px 16px; font-size:14px; font-weight:600;
+    background:var(--fill); color:var(--text);}
+  .pill.on{background:var(--primary); color:#fff;}
+  .row{display:flex; align-items:center; gap:14px; padding:14px 4px; border-bottom:1px solid var(--fill); font-size:15px;}
+  .row:last-child{border-bottom:0;}
+  .row .ic{width:38px; height:38px; border-radius:12px; background:var(--fill); display:flex;
+    align-items:center; justify-content:center; flex-shrink:0; color:var(--text);}
+  .row .ic svg{width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8;
+    stroke-linecap:round; stroke-linejoin:round;}
+  .row .chev{margin-left:auto; color:var(--sub);}
+  .row small{display:block; color:var(--sub); font-size:13px;}
+  .switch{margin-left:auto; width:52px; height:32px; border-radius:100px; background:var(--fill);
+    position:relative; border:0; flex-shrink:0; transition:background .2s;}
+  .switch::after{content:""; position:absolute; top:2px; left:2px; width:28px; height:28px;
+    border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .switch.on{background:var(--green);} .switch.on::after{left:22px;}
+  .seg{display:flex; background:var(--fill); border-radius:16px; padding:4px; gap:4px;}
+  .seg button{flex:1; border:0; background:transparent; color:var(--text); border-radius:12px;
+    padding:12px 4px; font-size:14px; font-weight:600;}
+  .seg button.on{background:var(--card); box-shadow:0 2px 8px rgba(0,0,0,.35);}
+  .radar{position:relative; height:230px; border-radius:var(--radius); background:var(--card); overflow:hidden;}
+  .radar .ring{position:absolute; border:1px solid var(--fill); border-radius:50%;}
+  .sweep{position:absolute; left:50%; top:50%; width:50%; height:2px; transform-origin:left center;
+    background:linear-gradient(90deg,transparent,var(--primary)); animation:spin 3.2s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .blip{position:absolute; width:14px; height:14px; border-radius:50%; background:var(--primary);
+    animation:blink 2s ease-in-out infinite;}
+  @keyframes blink{50%{opacity:.35; transform:scale(.8);}}
+  nav{position:fixed; bottom:0; left:0; right:0; background:var(--card); display:flex;
+    padding:10px 4px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid var(--fill);}
+  nav button{flex:1; border:0; background:none; color:var(--sub); font-size:11px; display:flex;
+    flex-direction:column; align-items:center; gap:3px;}
+  nav button span.e{font-size:22px;}
+  nav button.on{color:var(--primary);}
+  nav button svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.8;
+    stroke-linecap:round; stroke-linejoin:round;}
+  .approve{float:right; border:0; border-radius:100px; background:var(--fill); color:var(--text);
+    padding:8px 14px; font-size:13px; font-weight:700;}
+  .approve.ok{background:var(--green); color:#fff;}
+  #sheet{position:fixed; inset:auto 0 0 0; background:var(--card); border-radius:32px 32px 0 0;
+    padding:24px 24px calc(24px + env(safe-area-inset-bottom)); transform:translateY(110%);
+    transition:transform .45s cubic-bezier(.2,.9,.25,1.1); box-shadow:0 -8px 40px rgba(0,0,0,.5); z-index:5;}
+  #sheet.show{transform:none;}
+  #scrim{position:fixed; inset:0; background:rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:opacity .3s;}
+  #scrim.show{opacity:1;}
+  .fab{position:fixed; right:16px; bottom:96px; border:0; border-radius:100px; background:var(--primary);
+    color:#fff; font-weight:700; padding:14px 18px; font-size:14px; box-shadow:0 4px 16px rgba(0,0,0,.4);}
+  .bigimg{font-size:84px; text-align:center; padding:8px 0 0;}
+  .bigimg img{width:150px; height:150px; object-fit:contain;}
+  .bigimg{animation:drop .7s cubic-bezier(.2,.9,.25,1.15);}
+  .bigname{text-align:center; font-size:22px; font-weight:800; margin:2px 0;}
+  .bigsub{text-align:center; color:var(--sub); font-size:14px; margin-bottom:6px;}
+  #toast{position:fixed; left:50%; bottom:170px; transform:translateX(-50%) translateY(20px); background:var(--green);
+    color:#fff; padding:12px 20px; border-radius:100px; font-weight:700; opacity:0; transition:all .3s; z-index:9;}
+  #toast.show{opacity:1; transform:translateX(-50%);}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>PodsMate</h1>
+  <button class="themebtn" onclick="document.body.classList.toggle('light')">◐ Tema</button>
+</header>
+<main>
+  <!-- BATERÍA -->
+  <section class="tab active" id="t-bat">
+    <button class="approve" onclick="ok(this)">✓ Validar</button>
+    <div class="hero"><img id="heroImg" src="img/device_airpods_gen1_case.png" alt="">
+      <div><h2 id="heroName">AirPods Gen 2</h2><p>Conectado · En uso</p></div></div>
+    <div class="sec-title">Mi modelo</div>
+    <div class="modelrail" id="modelrail"></div>
+    <div class="sec-title">Batería</div>
+    <div class="card">
+      <div class="pills" style="margin-bottom:6px;">
+        <button class="pill on" id="linkbtn" onclick="linkToggle()">🔗 Vinculado</button>
+      </div>
+      <div class="buds3d" id="buds">
+        <div class="pod">
+          <img id="imgL" src="img/device_airpods_gen1_left.png" alt="Izquierdo">
+          <div class="bar"><i id="bL" style="background:#30D158"></i></div>
+          <p><b><span id="cL">0</span>%</b><br>Izquierdo · 3 h 12 min</p>
+        </div>
+        <div class="pod">
+          <img id="imgC" src="img/device_airpods_gen1_case.png" alt="Estuche">
+          <div class="bar"><i id="bC" style="background:#FF9F0A"></i></div>
+          <p><b><span id="cC">0</span>%</b><br>Estuche</p>
+        </div>
+        <div class="pod">
+          <img id="imgR" src="img/device_airpods_gen1_right.png" alt="Derecho">
+          <div class="bar"><i id="bR" style="background:#30D158"></i></div>
+          <p><b><span id="cR">0</span>%</b><br>Derecho · 2 h 40 min</p>
+        </div>
+      </div>
+    </div>
+    <div class="sec-title">Acciones rápidas</div>
+    <div class="card"><div class="pills">
+      <button class="pill on" onclick="this.classList.toggle('on')">🎙 Anunciar batería</button>
+      <button class="pill" onclick="this.classList.toggle('on')">⏸ Pausa al sacarlo</button>
+      <button class="pill" onclick="this.classList.toggle('on')">🔗 Autoconectar</button>
+    </div></div>
+  </section>
+
+  <!-- DISPOSITIVO -->
+  <section class="tab" id="t-dev">
+    <button class="approve" onclick="ok(this)">✓ Validar</button>
+    <div class="card"><div class="bigimg"><img id="devImg" src="img/device_airpods_gen1_both.png" alt="Modelo"></div>
+      <div class="bigname" id="devName">AirPods Gen 2</div>
+      <div class="bigsub">Conectado · Señal excelente</div></div>
+    <div class="sec-title">Modo de escucha</div>
+    <div class="card"><div class="seg" id="anc">
+      <button class="on">Activado</button><button>Ambiente</button><button>Off</button>
+    </div></div>
+    <div class="sec-title">General</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></svg></span><div>Detección de oreja<small>Pausa al sacártelos</small></div>
+        <button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2"/><circle cx="8" cy="16" r="2"/></svg></span><div>Volumen personalizado<small>Se adapta a tu entorno</small></div>
+        <button class="switch" onclick="this.classList.toggle('on')"></button></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><div>Micrófono<small>Automático</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/></svg></span><div>Renombrar<small>Mis AirPods</small></div><span class="chev">›</span></div>
+    </div>
+    <div class="sec-title">Batería y salud</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="15" height="9" rx="2.5"/><path d="M21 11v3"/></svg></span><div>Salud de batería<small>94 % de capacidad</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span><div>Carga optimizada<small>Cuida la batería</small></div>
+        <button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </section>
+
+  <!-- AUTO -->
+  <section class="tab" id="t-auto">
+    <button class="approve" onclick="ok(this)">✓ Validar</button>
+    <div class="sec-title">Al conectar</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 10v4h3l4 3V7l-4 3H4z"/><path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a8 8 0 0 1 0 11"/></svg></span><div>Anunciar batería por voz<small>"Izquierdo 85 %, derecho…"</small></div>
+        <button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0"/></svg></span><div>Avisar si el estuche está bajo<small>Umbral: 20 %</small></div>
+        <button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 12.5 10 18 20 6"/></svg></span><div>Avisar al completar carga<small>Al llegar al 100 %</small></div>
+        <button class="switch" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="sec-title">Gestos (modelos Pro)</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span><div>1 squeeze izq.<small>Reproducir / Pausar</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span><div>2 squeezes izq.<small>Siguiente</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="6"/><path d="M12 7V4"/></svg></span><div>Mantener izq.<small>Asistente de voz ★ nuevo</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="6"/><path d="M12 7V4"/></svg></span><div>Mantener der.<small>Anunciar batería ★ nuevo</small></div><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  <!-- RADAR -->
+  <section class="tab" id="t-radar">
+    <button class="approve" onclick="ok(this)">✓ Validar</button>
+    <div class="sec-title">Cercanos · 2 detectados</div>
+    <div class="radar" style="position:relative;">
+      <div class="ring" style="inset:18px;"></div>
+      <div class="ring" style="inset:52px;"></div>
+      <div class="ring" style="inset:86px;"></div>
+      <div class="sweep"></div>
+      <div class="blip" style="left:58%; top:34%;"></div>
+      <div class="blip" style="left:30%; top:62%; animation-delay:1s; background:var(--amber);"></div>
+    </div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg></span><div>AirPods Pro de María<small>Muy cerca · -42 dBm</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg></span><div>Beats Studio Buds<small>Lejos · -78 dBm</small></div><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  <!-- AJUSTES -->
+  <section class="tab" id="t-set">
+    <button class="approve" onclick="ok(this)">✓ Validar</button>
+    <div class="sec-title">Apariencia</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="14" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/></svg></span><div>Colores<small>Del sistema (Material You)</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></span><div>Tema oscuro<small>Según el sistema</small></div>
+        <button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="sec-title">Popup del estuche</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg></span><div>Posición<small>Abajo</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2M9 3h6"/></svg></span><div>Cierre automático<small>5 segundos</small></div><span class="chev">›</span></div>
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg></span><div>Vista previa<small>Probar popup</small></div><span class="chev">›</span></div>
+    </div>
+    <div class="sec-title">Acerca de</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8v.01"/></svg></span><div>PodsMate<small>Versión Fluid 1.0</small></div><span class="chev">›</span></div>
+    </div>
+  </section>
+</main>
+
+<button class="fab" onclick="sheet(true)">📦 Abrir estuche</button>
+<div id="scrim" onclick="sheet(false)"></div>
+<div id="sheet">
+  <div style="text-align:center; font-weight:800; font-size:19px;">AirPods Gen 2</div>
+  <div style="text-align:center; color:var(--sub); font-size:14px; margin-bottom:6px;">Estuche abierto</div>
+  <div class="legend"><span class="dot" style="background:#30D158"></span>Izquierdo
+    <span class="v"><span id="sL">0</span>%</span></div>
+  <div class="legend"><span class="dot" style="background:#30D158"></span>Derecho
+    <span class="v"><span id="sR">0</span>%</span></div>
+  <div class="legend"><span class="dot" style="background:#FF9F0A"></span>Estuche
+    <span class="v"><span id="sC">0</span>%</span></div>
+  <button class="pill on" style="width:100%; margin-top:12px;" onclick="sheet(false)">Cerrar</button>
+</div>
+<div id="toast">✓ Anotado</div>
+
+<nav>
+  <button class="on" onclick="go('t-bat',this)"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="14" rx="3"/><path d="M11 7V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2M11 11v2M12 18h.01"/></svg>Batería</button>
+  <button onclick="go('t-dev',this)"><svg viewBox="0 0 24 24"><path d="M6 10a4 4 0 0 1 8 0v6a3 3 0 0 1-3 3h-1"/><path d="M9 19v1a1.5 1.5 0 0 0 3 0v-4"/></svg>Dispositivo</button>
+  <button onclick="go('t-auto',this)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Auto</button>
+  <button onclick="go('t-radar',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 12 19 5M7.5 7.5a6 6 0 0 0 0 9M4.6 4.6a10 10 0 0 0 0 14.8"/></svg>Radar</button>
+  <button onclick="go('t-set',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.4-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"/></svg>Ajustes</button>
+</nav>
+<script>
+  function go(id,btn){
+    document.querySelectorAll('.tab').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on'); window.scrollTo(0,0);
+  }
+  function ring(id,frac){ const c=document.getElementById(id), r=+c.getAttribute('r'),
+    len=2*Math.PI*r; c.style.strokeDasharray=len; c.style.strokeDashoffset=len;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.strokeDashoffset=len*(1-frac);})); }
+  function count(id,to){ let v=0; const el=document.getElementById(id);
+    const t=setInterval(()=>{ v+=Math.max(1,Math.round((to-v)/8)); if(v>=to){v=to;clearInterval(t);} el.textContent=v; },40); }
+  window.addEventListener('load',()=>{
+    const rail=document.getElementById('modelrail');
+    MODELS.forEach((m,i)=>{
+      const d=document.createElement('div'); d.className='mcard'+(i===1?' on':'');
+      d.innerHTML='<img src="'+m.c+'" alt=""><p>'+m.label+'</p>';
+      d.onclick=()=>setModel(i); rail.appendChild(d);
+    });
+    document.getElementById('bL').style.width='85%';
+    document.getElementById('bR').style.width='72%';
+    document.getElementById('bC').style.width='60%';
+    count('cL',85); count('cR',72); count('cC',60);
+  });
+  const MODELS=[
+    {label:"AirPods (Gen 1)",l:"img/device_airpods_gen1_left.png",r:"img/device_airpods_gen1_right.png",c:"img/device_airpods_gen1_case.png",b:"img/device_airpods_gen1_both.png"},
+    {label:"AirPods (Gen 2)",l:"img/device_airpods_gen1_left.png",r:"img/device_airpods_gen1_right.png",c:"img/device_airpods_gen1_case.png",b:"img/device_airpods_gen1_both.png"},
+    {label:"AirPods (Gen 3)",l:"img/device_airpods_gen3_left.png",r:"img/device_airpods_gen3_right.png",c:"img/device_airpods_gen3_case.png",b:"img/device_airpods_gen3_both.png"},
+    {label:"AirPods (Gen 4)",l:"img/device_airpods_gen3_left.png",r:"img/device_airpods_gen3_right.png",c:"img/device_airpods_gen3_case.png",b:"img/device_airpods_gen3_both.png"},
+    {label:"AirPods (Gen 4 ANC)",l:"img/device_airpods_gen4anc_left.png",r:"img/device_airpods_gen4anc_right.png",c:"img/device_airpods_gen4anc_case.png",b:"img/device_airpods_gen4anc_both.png"},
+    {label:"AirPods (Gen 5)",l:"img/device_airpods_gen4anc_left.png",r:"img/device_airpods_gen4anc_right.png",c:"img/device_airpods_gen4anc_case.png",b:"img/device_airpods_gen4anc_both.png"},
+    {label:"AirPods Pro",l:"img/device_airpods_pro2_left.png",r:"img/device_airpods_pro2_right.png",c:"img/device_airpods_pro2_case.png",b:"img/device_airpods_pro2_both.png"},
+    {label:"AirPods Pro 2",l:"img/device_airpods_pro2_left.png",r:"img/device_airpods_pro2_right.png",c:"img/device_airpods_pro2_case.png",b:"img/device_airpods_pro2_both.png"},
+    {label:"AirPods Pro 2 USB-C",l:"img/device_airpods_pro2_left.png",r:"img/device_airpods_pro2_right.png",c:"img/device_airpods_pro2_case.png",b:"img/device_airpods_pro2_both.png"},
+    {label:"AirPods Pro 3",l:"img/device_airpods_pro2_left.png",r:"img/device_airpods_pro2_right.png",c:"img/device_airpods_pro2_case.png",b:"img/device_airpods_pro2_both.png"},
+    {label:"AirPods Max",l:"img/device_airpods_max.png",r:"img/device_airpods_max.png",c:"img/device_airpods_max.png",b:"img/device_airpods_max.png"},
+    {label:"Power Beats Pro",l:"img/device_powerbeats_pro_left.png",r:"img/device_powerbeats_pro_right.png",c:"img/device_powerbeats_pro_case.png",b:"img/device_powerbeats_pro_both.png"},
+    {label:"Power Beats Pro 2",l:"img/device_powerbeats_pro2_left.png",r:"img/device_powerbeats_pro2_right.png",c:"img/device_powerbeats_pro2_case.png",b:"img/device_powerbeats_pro2_both.png"},
+    {label:"Beats Fit Pro",l:"img/device_beats_fitpro_left.png",r:"img/device_beats_fitpro_right.png",c:"img/device_beats_fitpro_case.png",b:"img/device_beats_fitpro_both.png"}
+  ];
+  function setModel(i){
+    const m=MODELS[i]; if(!m) return;
+    document.getElementById('imgL').src=m.l;
+    document.getElementById('imgR').src=m.r;
+    document.getElementById('imgC').src=m.c;
+    document.getElementById('devImg').src=m.b;document.getElementById('devName').textContent=m.label.replace('(','').replace(')','');document.getElementById('heroImg').src=m.c;document.getElementById('heroName').textContent=m.label.replace('(','').replace(')','');
+    document.querySelectorAll('.mcard').forEach((c,j)=>c.classList.toggle('on',j===i));
+    document.querySelectorAll('.pod').forEach(p=>{ p.style.animation='none'; void p.offsetWidth; p.style.animation=''; });
+  }
+  document.querySelectorAll('#anc button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#anc button').forEach(x=>x.classList.remove('on')); b.classList.add('on');}));
+  function sheet(show){
+    document.getElementById('sheet').classList.toggle('show',show);
+    document.getElementById('scrim').classList.toggle('show',show);
+    if(show){ count('sL',85); count('sR',72); count('sC',60); }
+  }
+  function ok(btn){ btn.classList.add('ok'); btn.textContent='✓ Validada';
+    const t=document.getElementById('toast'); t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1200); }
+  function linkToggle(){
+    const b=document.getElementById('linkbtn'), buds=document.getElementById('buds');
+    const linked=b.classList.toggle('on');
+    buds.classList.toggle('unlinked',!linked);
+    b.textContent=linked?'🔗 Vinculado':'＋ Vincular';
+  }
+</script>
+</body>
+</html>

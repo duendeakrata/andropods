@@ -37,8 +37,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import eu.darken.capod.ui.fluid.components.BatteryStatusRingGroup
-import eu.darken.capod.ui.fluid.state.toFluidState
+import eu.darken.capod.ui.fluid.components.FluidBatteryPhotos
+import eu.darken.capod.ui.fluid.components.PhotoSlot
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -239,29 +239,51 @@ private fun ColumnScope.DualPodsCardExpanded(
         modifier = Modifier
             .fillMaxWidth()
             .then(if (!device.isLive) Modifier.alpha(0.7f) else Modifier),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(28.dp),
         tonalElevation = 4.dp,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            val fluidState = remember(device) {
-                device.toFluidState(
-                    label = "",
-                    leftMinutes = batteryEstimate?.left?.minutesRemaining,
-                    rightMinutes = batteryEstimate?.right?.minutesRemaining,
+            val photoSlots = buildList {
+                add(
+                    PhotoSlot(
+                        iconRes = device.leftPodIcon,
+                        label = stringResource(R.string.press_controls_left),
+                        sublabel = batteryEstimate?.left?.let {
+                            formatBatteryDurationShort(context, it.minutesRemaining)
+                        },
+                        percent = device.batteryLeft,
+                        charging = device.isLeftPodCharging == true,
+                        linked = device.isLive,
+                    )
+                )
+                if (device.hasCase) {
+                    add(
+                        PhotoSlot(
+                            iconRes = device.caseIcon,
+                            label = stringResource(R.string.fluid_slot_case),
+                            sublabel = null,
+                            percent = device.batteryCase,
+                            charging = device.isCaseCharging == true,
+                            linked = device.isLive,
+                        )
+                    )
+                }
+                add(
+                    PhotoSlot(
+                        iconRes = device.rightPodIcon,
+                        label = stringResource(R.string.press_controls_right),
+                        sublabel = batteryEstimate?.right?.let {
+                            formatBatteryDurationShort(context, it.minutesRemaining)
+                        },
+                        percent = device.batteryRight,
+                        charging = device.isRightPodCharging == true,
+                        linked = device.isLive,
+                    )
                 )
             }
-            BatteryStatusRingGroup(
-                state = fluidState,
-                leftLabel = stringResource(R.string.press_controls_left),
-                rightLabel = stringResource(R.string.press_controls_right),
-                caseLabel = stringResource(R.string.fluid_slot_case),
-                leftEta = batteryEstimate?.left?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
-                rightEta = batteryEstimate?.right?.let { formatBatteryDurationShort(context, it.minutesRemaining) },
-                caseEta = null,
-                dimmed = !device.isLive,
-            )
+            FluidBatteryPhotos(slots = photoSlots)
         }
     }
 

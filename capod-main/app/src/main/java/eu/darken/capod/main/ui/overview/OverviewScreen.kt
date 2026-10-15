@@ -493,7 +493,7 @@ private fun PodsMateHero(
                         MaterialTheme.colorScheme.tertiary,
                     )
                 ),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(28.dp),
             )
             .clickable(onClick = onClick)
             .padding(20.dp),

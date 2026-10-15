@@ -54,6 +54,8 @@ import eu.darken.capod.main.ui.overview.cards.components.SignalIndicator
 import eu.darken.capod.main.ui.overview.cards.components.StatusChip
 import eu.darken.capod.main.ui.overview.cards.components.batteryTierState
 import eu.darken.capod.common.SystemTimeSource
+import eu.darken.capod.ui.fluid.components.FluidBatteryPhotos
+import eu.darken.capod.ui.fluid.components.PhotoSlot
 import eu.darken.capod.common.compose.Preview2
 import eu.darken.capod.common.compose.PreviewWrapper
 import eu.darken.capod.common.compose.preview.MockPodDataProvider
@@ -221,7 +223,7 @@ private fun ColumnScope.SinglePodsCardExpanded(
         modifier = Modifier
             .fillMaxWidth()
             .then(if (!device.isLive) Modifier.alpha(0.7f) else Modifier),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(28.dp),
         tonalElevation = 4.dp,
     ) {
         Column(
@@ -230,57 +232,21 @@ private fun ColumnScope.SinglePodsCardExpanded(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(88.dp)
-                    .batteryTierState(tier),
-            ) {
-                // Track ring
-                CircularProgressIndicator(
-                    progress = { 1f },
-                    modifier = Modifier.size(88.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    strokeWidth = 8.dp,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    strokeCap = StrokeCap.Round,
-                )
-
-                // Progress ring
-                if (isKnown) {
-                    CircularProgressIndicator(
-                        progress = { animatedProgress },
-                        modifier = Modifier.size(88.dp),
-                        color = ringColor,
-                        strokeWidth = 8.dp,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        strokeCap = StrokeCap.Round,
-                    )
-                }
-
-                // Battery percentage + time remaining, stacked inside the ring
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = formatBatteryPercent(context, percent),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = tier.textColorOrNull() ?: if (isKnown) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+            // Validated look: real photo with drop-in, bar and count-up.
+            FluidBatteryPhotos(
+                slots = listOf(
+                    PhotoSlot(
+                        iconRes = device.iconRes,
+                        label = device.getLabel(context),
+                        sublabel = batteryEstimate?.headset?.let {
+                            formatBatteryDurationShort(context, it.minutesRemaining)
                         },
+                        percent = device.batteryHeadset,
+                        charging = device.isHeadsetBeingCharged == true,
+                        linked = device.isLive,
                     )
-                    val headsetEstimate = batteryEstimate?.headset
-                    if (headsetEstimate != null) {
-                        Text(
-                            text = formatBatteryDurationShort(context, headsetEstimate.minutesRemaining),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            softWrap = false,
-                        )
-                    }
-                }
-            }
+                ),
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
