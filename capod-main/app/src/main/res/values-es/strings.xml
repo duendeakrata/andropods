@@ -534,9 +534,31 @@
     <string name="press_action_rewind">Retroceder</string>
     <string name="press_action_cycle_anc">Ciclar control de ruido</string>
     <string name="press_action_toggle_anc_transparency">Alternar transparencia</string>
+    <string name="press_action_voice_assistant">Asistente de voz</string>
+    <string name="press_action_announce_battery">Anunciar batería</string>
     <string name="press_controls_reset_label">Restablecer valores predeterminados</string>
     <string name="press_controls_reset_confirm_message">¿Restablecer todas las asignaciones de pulsación a los valores predeterminados?</string>
     <string name="device_settings_noise_control_open_press_controls_action">Abrir controles de pulsación</string>
     <string name="general_navigate_up_action">Navegar arriba</string>
     <string name="general_progress_loading">Cargando</string>
+
+    <!-- Andropods additions -->
+    <string name="speech_battery_template">Batería: %1$s.</string>
+    <string name="speech_battery_left">izquierdo %1$d por ciento</string>
+    <string name="speech_battery_right">derecho %1$d por ciento</string>
+    <string name="speech_battery_headset">auricular %1$d por ciento</string>
+    <string name="speech_battery_case">case %1$d por ciento</string>
+    <string name="speech_battery_charged">%1$s cargado al %2$d por ciento.</string>
+    <string name="speech_battery_case_low">Batería baja del case de %1$s, queda %2$d por ciento.</string>
+    <string name="settings_speech_announce_battery_label">Anunciar eventos de batería por voz</string>
+    <string name="settings_speech_announce_battery_description">Mensaje de voz cuando el case esté bajo o la carga complete</string>
+    <string name="settings_popup_position_label">Posición del popup</string>
+    <string name="settings_popup_position_description">Dónde aparece el popup del case en pantalla</string>
+    <string name="popup_position_top">Arriba</string>
+    <string name="popup_position_center">Centro</string>
+    <string name="popup_position_bottom">Abajo</string>
+    <string name="settings_popup_autodismiss_label">Cierre automático del popup</string>
+    <string name="settings_popup_autodismiss_description">Segundos antes de que el popup se cierre solo (0 = nunca)</string>
+    <string name="settings_popup_autodismiss_never">Nunca</string>
+    <string name="settings_popup_autodismiss_secs">%1$d segundos</string>
 </resources>

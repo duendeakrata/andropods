@@ -19,6 +19,7 @@ import eu.darken.capod.common.theming.ThemeStyle
 import eu.darken.capod.pods.core.apple.PodModel
 import eu.darken.capod.pods.core.apple.ble.protocol.IdentityResolvingKey
 import eu.darken.capod.pods.core.apple.ble.protocol.ProximityEncryptionKey
+import eu.darken.capod.reaction.ui.popup.PopupPosition
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -86,6 +87,18 @@ class GeneralSettings @Inject constructor(
     val reactionsHintDismissed = dataStore.createValue("ui.hint.reactions_per_device.dismissed", false)
 
     val hideUnmatchedDevices = dataStore.createValue("ui.overview.unmatched.hidden", false)
+
+    /** Andropods: speak battery-low / charged events via TTS. */
+    val announceBatteryEvents = dataStore.createValue("core.speech.battery.announce", false)
+
+    /** Andropods: where the case popup appears. */
+    val popupPosition = dataStore.createValue(
+        "ui.popup.position", PopupPosition.BOTTOM, json,
+        onErrorFallbackToDefault = true,
+    )
+
+    /** Andropods: seconds before the case popup closes itself (0 = never, preserves CAPod behavior). */
+    val popupAutoDismissSecs = dataStore.createValue("ui.popup.autodismiss.secs", 0)
 
     val themeMode = dataStore.createValue(
         "core.ui.theme.mode", ThemeMode.SYSTEM, json,

@@ -11,6 +11,9 @@ import androidx.compose.material.icons.twotone.BatteryStd
 import androidx.compose.material.icons.twotone.Contrast
 import androidx.compose.material.icons.twotone.DarkMode
 import androidx.compose.material.icons.twotone.FilterList
+import androidx.compose.material.icons.twotone.Timer
+import androidx.compose.material.icons.twotone.VerticalAlignBottom
+import androidx.compose.material.icons.twotone.VolumeUp
 import androidx.compose.material.icons.automirrored.twotone.Message
 import androidx.compose.material.icons.twotone.Notifications
 import androidx.compose.material.icons.twotone.Palette
@@ -45,6 +48,7 @@ import eu.darken.capod.common.theming.ThemeColor
 import eu.darken.capod.common.theming.ThemeMode
 import eu.darken.capod.common.theming.ThemeState
 import eu.darken.capod.common.theming.ThemeStyle
+import eu.darken.capod.reaction.ui.popup.PopupPosition
 
 @Composable
 fun GeneralSettingsScreenHost(vm: GeneralSettingsViewModel = hiltViewModel()) {
@@ -63,6 +67,9 @@ fun GeneralSettingsScreenHost(vm: GeneralSettingsViewModel = hiltViewModel()) {
             onOffloadedBatchingDisabledChanged = { disabled -> vm.setOffloadedBatchingDisabled(disabled) },
             onUseIndirectScanResultCallbackChanged = { enabled -> vm.setUseIndirectScanResultCallback(enabled) },
             onHideUnmatchedDevicesChanged = { enabled -> vm.setHideUnmatchedDevices(enabled) },
+            onAnnounceBatteryEventsChanged = { enabled -> vm.setAnnounceBatteryEvents(enabled) },
+            onPopupPositionSelected = { position -> vm.setPopupPosition(position) },
+            onPopupAutoDismissSelected = { secs -> vm.setPopupAutoDismissSecs(secs) },
             onThemeModeSelected = { mode -> vm.setThemeMode(mode) },
             onThemeStyleSelected = { style -> vm.setThemeStyle(style) },
             onThemeColorSelected = { color -> vm.setThemeColor(color) },
@@ -82,6 +89,9 @@ fun GeneralSettingsScreen(
     onUseIndirectScanResultCallbackChanged: (Boolean) -> Unit,
     onHideUnmatchedDevicesChanged: (Boolean) -> Unit,
     onShowBatteryInStatusBarChanged: (Boolean) -> Unit = {},
+    onAnnounceBatteryEventsChanged: (Boolean) -> Unit = {},
+    onPopupPositionSelected: (PopupPosition) -> Unit = {},
+    onPopupAutoDismissSelected: (Int) -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit = {},
     onThemeStyleSelected: (ThemeStyle) -> Unit = {},
     onThemeColorSelected: (ThemeColor) -> Unit = {},
@@ -238,6 +248,44 @@ fun GeneralSettingsScreen(
                 )
             }
             item {
+                SettingsBaseItem(
+                    title = stringResource(R.string.settings_speech_announce_battery_label),
+                    subtitle = stringResource(R.string.settings_speech_announce_battery_description),
+                    icon = Icons.TwoTone.VolumeUp,
+                    onClick = { onAnnounceBatteryEventsChanged(!state.announceBatteryEvents) },
+                    trailingContent = {
+                        Switch(
+                            checked = state.announceBatteryEvents,
+                            onCheckedChange = onAnnounceBatteryEventsChanged,
+                            modifier = Modifier.padding(start = 16.dp),
+                        )
+                    },
+                )
+            }
+            item {
+                SettingsListPreferenceItem(
+                    icon = Icons.TwoTone.VerticalAlignBottom,
+                    title = stringResource(R.string.settings_popup_position_label),
+                    entries = PopupPosition.entries,
+                    selectedEntry = state.popupPosition,
+                    onEntrySelected = onPopupPositionSelected,
+                    entryLabel = { stringResource(it.labelRes) },
+                )
+            }
+            item {
+                SettingsListPreferenceItem(
+                    icon = Icons.TwoTone.Timer,
+                    title = stringResource(R.string.settings_popup_autodismiss_label),
+                    entries = listOf(0, 3, 5, 10, 30),
+                    selectedEntry = state.popupAutoDismissSecs,
+                    onEntrySelected = onPopupAutoDismissSelected,
+                    entryLabel = {
+                        if (it == 0) stringResource(R.string.settings_popup_autodismiss_never)
+                        else stringResource(R.string.settings_popup_autodismiss_secs, it)
+                    },
+                )
+            }
+            item {
                 SettingsCategoryHeader(
                     text = stringResource(R.string.settings_category_compatibility_options_title),
                     subtitle = stringResource(R.string.settings_category_compatibility_options_description),
@@ -313,6 +361,9 @@ private fun previewGeneralState(isPro: Boolean) = GeneralSettingsViewModel.State
     useIndirectScanResultCallback = false,
     hideUnmatchedDevices = false,
     themeState = ThemeState(),
+    announceBatteryEvents = false,
+    popupPosition = PopupPosition.BOTTOM,
+    popupAutoDismissSecs = 0,
 )
 
 @Preview2

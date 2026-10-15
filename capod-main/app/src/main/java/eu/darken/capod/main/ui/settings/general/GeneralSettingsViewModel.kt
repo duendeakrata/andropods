@@ -15,6 +15,7 @@ import eu.darken.capod.common.upgrade.UpgradeRepo
 import eu.darken.capod.common.upgrade.isProForUi
 import eu.darken.capod.main.core.GeneralSettings
 import eu.darken.capod.main.core.themeState
+import eu.darken.capod.reaction.ui.popup.PopupPosition
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -43,6 +44,9 @@ class GeneralSettingsViewModel @Inject constructor(
         val useIndirectScanResultCallback: Boolean,
         val hideUnmatchedDevices: Boolean,
         val themeState: ThemeState,
+        val announceBatteryEvents: Boolean,
+        val popupPosition: PopupPosition,
+        val popupAutoDismissSecs: Int,
     )
 
     // Hard-locked = settled, error-free and no entitlement. Anything else (unsettled seed, error)
@@ -71,7 +75,10 @@ class GeneralSettingsViewModel @Inject constructor(
         generalSettings.themeState,
         isUpgradeLocked,
         generalSettings.hideUnmatchedDevices.flow,
-    ) { general, compat, themeState, upgradeLocked, hideUnmatched ->
+        generalSettings.announceBatteryEvents.flow,
+        generalSettings.popupPosition.flow,
+        generalSettings.popupAutoDismissSecs.flow,
+    ) { general, compat, themeState, upgradeLocked, hideUnmatched, announceBattery, popupPos, autoDismiss ->
         State(
             isUpgradeLocked = upgradeLocked,
             showConnectedNotification = general[0] as Boolean,
@@ -82,6 +89,9 @@ class GeneralSettingsViewModel @Inject constructor(
             useIndirectScanResultCallback = compat[2] as Boolean,
             hideUnmatchedDevices = hideUnmatched,
             themeState = themeState,
+            announceBatteryEvents = announceBattery,
+            popupPosition = popupPos,
+            popupAutoDismissSecs = autoDismiss,
         )
     }.asLiveState()
 
@@ -118,6 +128,21 @@ class GeneralSettingsViewModel @Inject constructor(
     fun setHideUnmatchedDevices(enabled: Boolean) {
         log(TAG, INFO) { "setHideUnmatchedDevices($enabled)" }
         generalSettings.hideUnmatchedDevices.valueBlocking = enabled
+    }
+
+    fun setAnnounceBatteryEvents(enabled: Boolean) {
+        log(TAG, INFO) { "setAnnounceBatteryEvents($enabled)" }
+        generalSettings.announceBatteryEvents.valueBlocking = enabled
+    }
+
+    fun setPopupPosition(position: PopupPosition) {
+        log(TAG, INFO) { "setPopupPosition($position)" }
+        generalSettings.popupPosition.valueBlocking = position
+    }
+
+    fun setPopupAutoDismissSecs(secs: Int) {
+        log(TAG, INFO) { "setPopupAutoDismissSecs($secs)" }
+        generalSettings.popupAutoDismissSecs.valueBlocking = secs
     }
 
     fun setThemeMode(mode: ThemeMode) = launch {

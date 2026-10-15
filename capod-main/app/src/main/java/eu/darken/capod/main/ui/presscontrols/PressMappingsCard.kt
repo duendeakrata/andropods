@@ -289,6 +289,8 @@ private fun StemAction.label(): String = when (this) {
     is StemAction.MuteToggle -> stringResource(R.string.press_action_mute_toggle)
     is StemAction.CycleAnc -> stringResource(R.string.press_action_cycle_anc)
     is StemAction.ToggleAncTransparency -> stringResource(R.string.press_action_toggle_anc_transparency)
+    is StemAction.VoiceAssistant -> stringResource(R.string.press_action_voice_assistant)
+    is StemAction.AnnounceBattery -> stringResource(R.string.press_action_announce_battery)
 }
 
 @Preview2

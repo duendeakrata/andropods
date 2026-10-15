@@ -20,6 +20,8 @@ sealed interface StemAction : Parcelable {
     @Parcelize @Serializable @SerialName("MUTE_TOGGLE") data object MuteToggle : StemAction
     @Parcelize @Serializable @SerialName("CYCLE_ANC") data object CycleAnc : StemAction
     @Parcelize @Serializable @SerialName("TOGGLE_ANC_TRANSPARENCY") data object ToggleAncTransparency : StemAction
+    @Parcelize @Serializable @SerialName("VOICE_ASSISTANT") data object VoiceAssistant : StemAction
+    @Parcelize @Serializable @SerialName("ANNOUNCE_BATTERY") data object AnnounceBattery : StemAction
 
     companion object {
         val all: List<StemAction> = listOf(
@@ -28,6 +30,7 @@ sealed interface StemAction : Parcelable {
             VolumeUp, VolumeDown, MuteToggle,
             Stop, FastForward, Rewind,
             CycleAnc, ToggleAncTransparency,
+            VoiceAssistant, AnnounceBattery,
             NoAction,
         )
     }

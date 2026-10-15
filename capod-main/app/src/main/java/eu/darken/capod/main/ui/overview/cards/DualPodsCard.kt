@@ -444,18 +444,10 @@ private fun CaseRow(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
-                text = formatBatteryPercent(context, device.batteryCase),
-                style = MaterialTheme.typography.bodyMedium,
-                color = tier.textColorOrNull() ?: LocalContentColor.current,
-                modifier = Modifier.padding(end = 8.dp),
-            )
-
-            BatteryCapsule(
+            BatteryRing(
                 percent = device.batteryCase,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(8.dp),
+                size = 56.dp,
+                strokeWidth = 6.dp,
             )
 
             Spacer(modifier = Modifier.width(8.dp))

@@ -2,6 +2,8 @@ package eu.darken.capod.monitor.core.aap
 
 import android.view.KeyEvent
 import eu.darken.capod.common.MediaControl
+import eu.darken.capod.common.speech.Speaker
+import eu.darken.capod.monitor.core.DeviceMonitor
 import eu.darken.capod.pods.core.apple.PodModel
 import eu.darken.capod.pods.core.apple.aap.AapConnectionManager
 import eu.darken.capod.pods.core.apple.aap.AapPodState
@@ -52,7 +54,7 @@ class StemPressReactionTest : BaseTest() {
             every { this@mockk.profiles } returns flowOf(profiles)
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
 
         val job = launch { reaction.monitor().collect {} }
 
@@ -79,7 +81,7 @@ class StemPressReactionTest : BaseTest() {
             )
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
 
         val job = launch { reaction.monitor().collect {} }
 
@@ -111,7 +113,7 @@ class StemPressReactionTest : BaseTest() {
             )
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
 
         val job = launch { reaction.monitor().collect {} }
 
@@ -147,7 +149,7 @@ class StemPressReactionTest : BaseTest() {
             )
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
         val job = launch { reaction.monitor().collect {} }
 
         events.emit(addressA to StemPressEvent(StemPressEvent.PressType.SINGLE, StemPressEvent.Bud.LEFT))
@@ -196,7 +198,7 @@ class StemPressReactionTest : BaseTest() {
             )
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
         val job = launch { reaction.monitor().collect {} }
 
         events.emit(addressA to StemPressEvent(StemPressEvent.PressType.SINGLE, StemPressEvent.Bud.LEFT))
@@ -233,7 +235,7 @@ class StemPressReactionTest : BaseTest() {
             )
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
         val job = launch { reaction.monitor().collect {} }
 
         events.emit(addressA to StemPressEvent(StemPressEvent.PressType.SINGLE, StemPressEvent.Bud.LEFT))
@@ -263,7 +265,7 @@ class StemPressReactionTest : BaseTest() {
             every { this@mockk.profiles } returns flowOf(listOf<DeviceProfile>(noCycleProfile))
         }
         val mediaControl = mockk<MediaControl>(relaxed = true)
-        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl)
+        val reaction = StemPressReaction(aapManager, profilesRepo, mediaControl, mockk<DeviceMonitor>(relaxed = true), mockk<Speaker>(relaxed = true))
         val job = launch { reaction.monitor().collect {} }
 
         events.emit(addressA to StemPressEvent(StemPressEvent.PressType.SINGLE, StemPressEvent.Bud.LEFT))

@@ -11,10 +11,12 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import dagger.hilt.android.AndroidEntryPoint
+import eu.darken.capod.R
 import eu.darken.capod.common.bluetooth.BluetoothAddress
 import eu.darken.capod.common.bluetooth.BluetoothDevice2
 import eu.darken.capod.common.bluetooth.BluetoothManager2
 import eu.darken.capod.common.coroutine.DispatcherProvider
+import eu.darken.capod.common.datastore.valueBlocking
 import eu.darken.capod.common.debug.Bugs
 import eu.darken.capod.common.debug.logging.Logging.Priority.VERBOSE
 import eu.darken.capod.common.debug.logging.Logging.Priority.WARN
@@ -24,6 +26,7 @@ import eu.darken.capod.common.debug.logging.logTag
 import eu.darken.capod.common.flow.setupCommonEventHandlers
 import eu.darken.capod.common.flow.throttleLatest
 import eu.darken.capod.common.hasApiLevel
+import eu.darken.capod.common.speech.Speaker
 import eu.darken.capod.main.core.GeneralSettings
 import eu.darken.capod.main.core.MonitorMode
 import eu.darken.capod.main.core.PermissionTool
@@ -99,6 +102,7 @@ class MonitorService : Service() {
     @Inject lateinit var aapConnectionManager: AapConnectionManager
     @Inject lateinit var monitorModeResolver: MonitorModeResolver
     @Inject lateinit var batteryEstimator: BatteryEstimator
+    @Inject lateinit var speaker: Speaker
 
     private val monitorScope = MonitorCoroutineScope()
     private var monitoringJob: Job? = null
@@ -401,7 +405,17 @@ class MonitorService : Service() {
                         profileId = event.profileId,
                         deviceLabel = event.deviceLabel,
                         thresholdPercent = event.thresholdPercent,
-                    )
+                    ).also {
+                        if (generalSettings.announceBatteryEvents.valueBlocking) {
+                            speaker.speak(
+                                getString(
+                                    R.string.speech_battery_charged,
+                                    event.deviceLabel,
+                                    event.thresholdPercent,
+                                )
+                            )
+                        }
+                    }
 
                     is ChargedReaction.Event.CancelNotification ->
                         chargedReactionNotifications.cancel(event.profileId)
@@ -418,7 +432,17 @@ class MonitorService : Service() {
                         profileId = event.profileId,
                         deviceLabel = event.deviceLabel,
                         casePercent = event.casePercent,
-                    )
+                    ).also {
+                        if (generalSettings.announceBatteryEvents.valueBlocking) {
+                            speaker.speak(
+                                getString(
+                                    R.string.speech_battery_case_low,
+                                    event.deviceLabel,
+                                    event.casePercent,
+                                )
+                            )
+                        }
+                    }
 
                     is CaseLowReminderReaction.Event.CancelNotification ->
                         caseLowReminderNotifications.cancel(event.profileId)

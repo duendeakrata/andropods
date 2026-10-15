@@ -3,9 +3,13 @@ package eu.darken.capod.monitor.core.aap
 import android.view.KeyEvent
 import eu.darken.capod.common.MediaControl
 import eu.darken.capod.common.debug.logging.Logging.Priority.WARN
+import eu.darken.capod.common.debug.logging.asLog
 import eu.darken.capod.common.debug.logging.log
 import eu.darken.capod.common.debug.logging.logTag
 import eu.darken.capod.common.flow.setupCommonEventHandlers
+import eu.darken.capod.common.speech.Speaker
+import eu.darken.capod.monitor.core.DeviceMonitor
+import eu.darken.capod.monitor.core.devicesWithProfiles
 import eu.darken.capod.pods.core.apple.aap.AapConnectionManager
 import eu.darken.capod.pods.core.apple.aap.protocol.AapCommand
 import eu.darken.capod.pods.core.apple.aap.protocol.AapSetting
@@ -26,6 +30,8 @@ class StemPressReaction @Inject constructor(
     private val aapManager: AapConnectionManager,
     private val profilesRepo: DeviceProfilesRepo,
     private val mediaControl: MediaControl,
+    private val deviceMonitor: DeviceMonitor,
+    private val speaker: Speaker,
 ) {
     fun monitor(): Flow<Unit> = aapManager.stemPressEvents
         .onEach { (address, event) ->
@@ -72,6 +78,18 @@ class StemPressReaction @Inject constructor(
             is StemAction.MuteToggle -> mediaControl.toggleMuteMusic()
             is StemAction.CycleAnc -> cycleAnc(address)
             is StemAction.ToggleAncTransparency -> toggleAncTransparency(address)
+            is StemAction.VoiceAssistant -> mediaControl.sendKey(KeyEvent.KEYCODE_VOICE_ASSIST)
+            is StemAction.AnnounceBattery -> announceBattery(address)
+        }
+    }
+
+    private suspend fun announceBattery(address: String) {
+        try {
+            val device = deviceMonitor.devicesWithProfiles().first()
+                .firstOrNull { it.address == address } ?: return
+            speaker.speakBattery(device)
+        } catch (e: Exception) {
+            log(TAG, WARN) { "announceBattery($address) failed: ${e.asLog()}" }
         }
     }
 

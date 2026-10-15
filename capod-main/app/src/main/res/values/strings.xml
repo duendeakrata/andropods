@@ -612,10 +612,32 @@
     <string name="press_action_rewind">Rewind</string>
     <string name="press_action_cycle_anc">Cycle Noise Control</string>
     <string name="press_action_toggle_anc_transparency">Toggle Transparency</string>
+    <string name="press_action_voice_assistant">Voice Assistant</string>
+    <string name="press_action_announce_battery">Announce Battery</string>
     <string name="press_controls_reset_label">Reset to defaults</string>
     <string name="press_controls_reset_confirm_message">Reset all press mappings to defaults?</string>
     <string name="device_settings_noise_control_open_press_controls_action">Open Press Controls</string>
 
     <string name="general_navigate_up_action">Navigate up</string>
     <string name="general_progress_loading">Loading</string>
+
+    <!-- Andropods additions -->
+    <string name="speech_battery_template">Battery: %1$s.</string>
+    <string name="speech_battery_left">left %1$d percent</string>
+    <string name="speech_battery_right">right %1$d percent</string>
+    <string name="speech_battery_headset">headset %1$d percent</string>
+    <string name="speech_battery_case">case %1$d percent</string>
+    <string name="speech_battery_charged">%1$s charged to %2$d percent.</string>
+    <string name="speech_battery_case_low">%1$s case battery low, %2$d percent remaining.</string>
+    <string name="settings_speech_announce_battery_label">Announce battery events aloud</string>
+    <string name="settings_speech_announce_battery_description">Speak a voice message when the case is low or charging is complete</string>
+    <string name="settings_popup_position_label">Popup position</string>
+    <string name="settings_popup_position_description">Where the case popup appears on screen</string>
+    <string name="popup_position_top">Top</string>
+    <string name="popup_position_center">Center</string>
+    <string name="popup_position_bottom">Bottom</string>
+    <string name="settings_popup_autodismiss_label">Popup auto-close</string>
+    <string name="settings_popup_autodismiss_description">Seconds before the case popup closes itself (0 = never)</string>
+    <string name="settings_popup_autodismiss_never">Never</string>
+    <string name="settings_popup_autodismiss_secs">%1$d seconds</string>
 </resources>

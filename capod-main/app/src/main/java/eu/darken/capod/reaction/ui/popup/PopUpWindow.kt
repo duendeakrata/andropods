@@ -3,6 +3,8 @@ package eu.darken.capod.reaction.ui.popup
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.PixelFormat
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.runtime.MutableState
@@ -16,6 +18,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.qualifiers.ApplicationContext
+import eu.darken.capod.common.datastore.valueBlocking
 import eu.darken.capod.common.debug.logging.Logging.Priority.ERROR
 import eu.darken.capod.common.debug.logging.Logging.Priority.INFO
 import eu.darken.capod.common.debug.logging.asLog
@@ -52,6 +55,8 @@ class PopUpWindow @Inject constructor(
     private var composeView: ComposeView? = null
     private var lifecycleOwner: OverlayLifecycleOwner? = null
     private var deviceState: MutableState<PodDevice?>? = null
+    private val dismissHandler = Handler(Looper.getMainLooper())
+    private var dismissTask: Runnable? = null
 
     @Volatile var isMainActivityVisible: Boolean = false
 
@@ -66,10 +71,17 @@ class PopUpWindow @Inject constructor(
             if (composeView?.parent != null && deviceState != null) {
                 log(TAG) { "Popup already visible, updating device." }
                 deviceState?.value = device
+                scheduleAutoDismiss()
                 return
             }
 
             teardown()
+
+            layoutParams.gravity = when (generalSettings.popupPosition.valueBlocking) {
+                PopupPosition.TOP -> Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                PopupPosition.CENTER -> Gravity.CENTER
+                PopupPosition.BOTTOM -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            }
 
             val state = mutableStateOf<PodDevice?>(device)
             deviceState = state
@@ -96,6 +108,7 @@ class PopUpWindow @Inject constructor(
             owner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
 
             windowManager.addView(view, layoutParams)
+            scheduleAutoDismiss()
         } catch (e: Exception) {
             log(TAG, ERROR) { "open() failed: ${e.asLog()}" }
         }
@@ -113,6 +126,8 @@ class PopUpWindow @Inject constructor(
     }
 
     private fun teardown() {
+        dismissTask?.let { dismissHandler.removeCallbacks(it) }
+        dismissTask = null
         lifecycleOwner?.let { existing ->
             existing.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             existing.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -124,6 +139,16 @@ class PopUpWindow @Inject constructor(
         composeView = null
         lifecycleOwner = null
         deviceState = null
+    }
+
+    private fun scheduleAutoDismiss() {
+        dismissTask?.let { dismissHandler.removeCallbacks(it) }
+        dismissTask = null
+        val secs = generalSettings.popupAutoDismissSecs.valueBlocking.coerceIn(0, 300)
+        if (secs <= 0) return
+        val task = Runnable { close() }
+        dismissTask = task
+        dismissHandler.postDelayed(task, secs * 1000L)
     }
 
     /**
