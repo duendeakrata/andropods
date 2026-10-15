@@ -15,10 +15,10 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
-      - run: chmod +x gradlew || true
-      - run: gradle wrapper --gradle-version 8.7 || true
-        working-directory: andropods-app
-      - run: ./gradlew :app:assembleDebug --stacktrace
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.7
+      - run: gradle :app:assembleDebug --stacktrace
         working-directory: andropods-app
       - uses: actions/upload-artifact@v4
         with:
