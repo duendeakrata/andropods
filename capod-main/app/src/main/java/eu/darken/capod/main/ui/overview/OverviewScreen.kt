@@ -5,11 +5,24 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Bluetooth
 import androidx.compose.material.icons.twotone.BluetoothConnected
@@ -31,10 +44,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -300,6 +318,14 @@ fun OverviewScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(horizontal = 8.dp, vertical = 4.dp),
         ) {
+            // PodsMate identity header
+            item("podsMateHero") {
+                PodsMateHero(
+                    devices = state.devices,
+                    isBluetoothEnabled = state.isBluetoothEnabled,
+                    onClick = onManageDevices,
+                )
+            }
             // 1. Permission cards
             items(
                 items = state.permissions.sortedByDescending { it.isScanBlocking },
@@ -430,6 +456,61 @@ fun OverviewScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PodsMateHero(
+    devices: List<PodDevice>,
+    isBluetoothEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val live = devices.firstOrNull { it.isLive }
+    val subtitle = when {
+        !isBluetoothEnabled -> stringResource(R.string.overview_bluetooth_disabled_label)
+        live != null -> live.getLabel(context)
+        devices.isNotEmpty() -> devices.first().getLabel(context)
+        else -> stringResource(R.string.podsmate_hero_idle)
+    }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    listOf(Color(0xFF007AFF), Color(0xFF5856D6))
+                ),
+                shape = RoundedCornerShape(20.dp),
+            )
+            .clickable(onClick = onClick)
+            .padding(20.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.85f),
+                )
             }
         }
     }

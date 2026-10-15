@@ -31,7 +31,7 @@ object AncWidgetRenderStateMapper {
                 resolvedBgColor = bgColor,
                 resolvedTextColor = textColor,
                 resolvedIconColor = iconColor,
-                primaryText = context.getString(R.string.upgrade_capod_label),
+                primaryText = context.getString(R.string.upgrade_PodsMate_label),
                 secondaryText = context.getString(R.string.upgrade_capod_description),
             )
 
